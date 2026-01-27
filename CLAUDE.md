@@ -76,6 +76,8 @@ These rules ensure maintainability, safety, and developer velocity.
 - **C-6 (SHOULD NOT)** Extract a new function unless it will be reused elsewhere, is the only way to unit-test otherwise untestable logic, or drastically improves readability of an opaque block.
 - **C-7 (MUST NOT)** Use var keyword whenever an explicit type can be used.
 - **C-8 (MUST NOT)** Use _ prefix for attribute names.
+- **C-9 (MUST)** Use the modern initialization syntax for lists and other objects.
+- **C-10 (SHOULD)** Use the moders C# syntax wherever possible.
 
 
 ---
