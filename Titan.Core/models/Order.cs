@@ -12,4 +12,5 @@ public class Order
     public required OrderSide Side { get; init; }
     public OrderStatus Status { get; set; }
     public decimal RemainingQuantity { get; set; }
+    public DateTime Timestamp { get; init; }
 }

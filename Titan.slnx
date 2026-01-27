@@ -1,3 +1,6 @@
 <Solution>
-  <Project Path="Core/Core.csproj" />
+  <Project Path="Titan.Core/Titan.Core.csproj" />
+  <Project Path="Titan.Engine/Titan.Engine.csproj" />
+  <Project Path="Titan.Gateway/Titan.Gateway.csproj" />
+  <Project Path="tests/Titan.Engine.Tests/Titan.Engine.Tests.csproj" />
 </Solution>

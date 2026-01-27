@@ -54,11 +54,11 @@ These rules ensure maintainability, safety, and developer velocity.
 **MUST** rules are enforced by CI; **SHOULD** rules are strongly recommended.
 
 ---
-### 0 - Communication rules
+### 1 - Communication rules
 - **COM-1 (MUST)** In all interactions and commit messages, be extremely concise and sacrifice grammar for  the sake of concision.
 
 
-### 1 — Before Coding
+### 2 — Before Coding
 
 - **BP-1 (MUST)** Ask the user clarifying questions.
 - **BP-2 (SHOULD)** Draft and confirm an approach for complex work.  
@@ -66,25 +66,28 @@ These rules ensure maintainability, safety, and developer velocity.
 
 ---
 
-### 2 — While Coding
-
+### 3 — While Coding
+  
 - **C-1 (MUST)** Follow TDD: scaffold stub -> write failing test -> implement.
-- **C-2 (MUST)** Name functions with existing domain vocabulary for consistency.  
+- **C-2 (MUST)** Name functions with existing domain vocabulary for consistency.
 - **C-3 (SHOULD NOT)** Introduce classes when small testable functions suffice.  
 - **C-4 (SHOULD)** Prefer simple, composable, testable functions.
 - **C-5 (SHOULD NOT)** Add comments except for critical caveats; rely on self‑explanatory code.
 - **C-6 (SHOULD NOT)** Extract a new function unless it will be reused elsewhere, is the only way to unit-test otherwise untestable logic, or drastically improves readability of an opaque block.
+- **C-7 (MUST NOT)** Use var keyword whenever an explicit type can be used.
+- **C-8 (MUST NOT)** Use _ prefix for attribute names.
+
 
 ---
 
-### 3 — Testing
+### 4 — Testing
 
 - **T-1 (SHOULD)** Prefer integration tests over heavy mocking.  
 - **T-2 (SHOULD)** Unit-test complex algorithms thoroughly.
 
 ---
 
-### 4 - Git
+### 5 - Git
 
 - **GH-1 (MUST**) Use Conventional Commits format when writing commit messages: https://www.conventionalcommits.org/en/v1.0.0
 - **GH-2 (SHOULD NOT**) Refer to Claude or Anthropic in commit messages.
