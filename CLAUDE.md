@@ -1,0 +1,265 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+Titan is a high-performance, centralized financial exchange engine designed to facilitate real-time trade matching with high precision and strict data integrity. The system handles high-frequency order ingestion, maintains a deterministic Limit Order Book (LOB), and provides an immutable audit trail for all transactions.
+
+## Build Commands
+
+```bash
+# Build entire solution
+dotnet build Titan.slnx
+
+# Build specific project
+dotnet build Titan.Core/Titan.Core.csproj
+dotnet build Titan.Engine/Titan.Engine.csproj
+dotnet build Titan.Gateway/Titan.Gateway.csproj
+
+# Clean build artifacts
+dotnet clean Titan.slnx
+
+# Restore dependencies
+dotnet restore Titan.slnx
+```
+
+## Running the Application
+
+```bash
+# Run the gateway (entry point)
+dotnet run --project Titan.Gateway/Titan.Gateway.csproj
+```
+
+## Testing Commands
+
+Note: Test projects are not yet created. When tests are added:
+
+```bash
+# Run all tests
+dotnet test
+
+# Run tests for specific project
+dotnet test tests/Titan.Engine.Tests/
+
+# Run single test
+dotnet test --filter FullyQualifiedName~TestMethodName
+```
+
+## Implementation Best Practices
+
+### 0 — Purpose  
+
+These rules ensure maintainability, safety, and developer velocity. 
+**MUST** rules are enforced by CI; **SHOULD** rules are strongly recommended.
+
+---
+### 0 - Communication rules
+- **COM-1 (MUST)** In all interactions and commit messages, be extremely concise and sacrifice grammar for  the sake of concision.
+
+
+### 1 — Before Coding
+
+- **BP-1 (MUST)** Ask the user clarifying questions.
+- **BP-2 (SHOULD)** Draft and confirm an approach for complex work.  
+- **BP-3 (SHOULD)** If ≥ 2 approaches exist, list clear pros and cons.
+
+---
+
+### 2 — While Coding
+
+- **C-1 (MUST)** Follow TDD: scaffold stub -> write failing test -> implement.
+- **C-2 (MUST)** Name functions with existing domain vocabulary for consistency.  
+- **C-3 (SHOULD NOT)** Introduce classes when small testable functions suffice.  
+- **C-4 (SHOULD)** Prefer simple, composable, testable functions.
+- **C-5 (SHOULD NOT)** Add comments except for critical caveats; rely on self‑explanatory code.
+- **C-6 (SHOULD NOT)** Extract a new function unless it will be reused elsewhere, is the only way to unit-test otherwise untestable logic, or drastically improves readability of an opaque block.
+
+---
+
+### 3 — Testing
+
+- **T-1 (SHOULD)** Prefer integration tests over heavy mocking.  
+- **T-2 (SHOULD)** Unit-test complex algorithms thoroughly.
+
+---
+
+### 4 - Git
+
+- **GH-1 (MUST**) Use Conventional Commits format when writing commit messages: https://www.conventionalcommits.org/en/v1.0.0
+- **GH-2 (SHOULD NOT**) Refer to Claude or Anthropic in commit messages.
+
+---
+
+## Writing Functions Best Practices
+
+When evaluating whether a function you implemented is good or not, use this checklist:
+
+1. Can you read the function and HONESTLY easily follow what it's doing? If yes, then stop here.
+2. Does the function have very high cyclomatic complexity? (number of independent paths, or, in a lot of cases, number of nesting if if-else as a proxy). If it does, then it's probably sketchy.
+3. Are there any common data structures and algorithms that would make this function much easier to follow and more robust? Parsers, trees, stacks / queues, etc.
+4. Are there any unused parameters in the function?
+5. Are there any unnecessary type casts that can be moved to function arguments?
+6. Is the function easily testable without mocking core features (e.g. sql queries, redis, etc.)? If not, can this function be tested as part of an integration test?
+7. Does it have any hidden untested dependencies or any values that can be factored out into the arguments instead? Only care about non-trivial dependencies that can actually change or affect the function.
+8. Brainstorm 3 better function names and see if the current name is the best, consistent with rest of codebase.
+
+IMPORTANT: you SHOULD NOT refactor out a separate function unless there is a compelling need, such as:
+  - the refactored function is used in more than one place
+  - the refactored function is easily unit testable while the original function is not AND you can't test it any other way
+  - the original function is extremely hard to follow and you resort to putting comments everywhere just to explain it
+
+## Writing Tests Best Practices
+
+When evaluating whether a test you've implemented is good or not, use this checklist:
+
+1. SHOULD parameterize inputs; never embed unexplained literals such as 42 or "foo" directly in the test.
+2. SHOULD NOT add a test unless it can fail for a real defect. Trivial asserts (e.g., expect(2).toBe(2)) are forbidden.
+3. SHOULD ensure the test description states exactly what the final expect verifies. If the wording and assert don’t align, rename or rewrite.
+4. SHOULD compare results to independent, pre-computed expectations or to properties of the domain, never to the function’s output re-used as the oracle.
+5. SHOULD test edge cases, realistic input, unexpected input, and value boundaries.
+6. SHOULD NOT test conditions that are caught by the type checker.
+
+## Remember Shortcuts
+
+Remember the following shortcuts which the user may invoke at any time.
+
+### QNEW
+
+When I type "qnew", this means:
+
+```
+Understand all BEST PRACTICES listed in CLAUDE.md.
+Your code SHOULD ALWAYS follow these best practices.
+```
+
+### QPLAN
+When I type "qplan", this means:
+```
+Analyze similar parts of the codebase and determine whether your plan:
+- is consistent with rest of codebase
+- introduces minimal changes
+- reuses existing code
+```
+
+## QCODE
+
+When I type "qcode", this means:
+
+```
+Implement your plan and make sure your new tests pass.
+Always run tests to make sure you didn't break anything else.
+```
+
+### QCHECK
+
+When I type "qcheck", this means:
+
+```
+You are a SKEPTICAL senior software engineer.
+Perform this analysis for every MAJOR code change you introduced (skip minor changes):
+
+1. CLAUDE.md checklist Writing Functions Best Practices.
+2. CLAUDE.md checklist Writing Tests Best Practices.
+3. CLAUDE.md checklist Implementation Best Practices.
+```
+
+### QCHECKF
+
+When I type "qcheckf", this means:
+
+```
+You are a SKEPTICAL senior software engineer.
+Perform this analysis for every MAJOR function you added or edited (skip minor changes):
+
+1. CLAUDE.md checklist Writing Functions Best Practices.
+```
+
+### QCHECKT
+
+When I type "qcheckt", this means:
+
+```
+You are a SKEPTICAL senior software engineer.
+Perform this analysis for every MAJOR test you added or edited (skip minor changes):
+
+1. CLAUDE.md checklist Writing Tests Best Practices.
+```
+
+### QGIT
+
+When I type "qgit", this means:
+
+```
+Add all changes to staging and create a commit.
+
+Follow this checklist for writing your commit message:
+- SHOULD use Conventional Commits format: https://www.conventionalcommits.org/en/v1.0.0
+- SHOULD NOT refer to Claude or Anthropic in the commit message.
+- SHOULD structure commit message as follows:
+<type>[optional scope]: <description>
+[optional body]
+[optional footer(s)]
+- commit SHOULD contain the following structural elements to communicate intent: 
+fix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).
+feat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning).
+BREAKING CHANGE: a commit that has a footer BREAKING CHANGE:, or appends a ! after the type/scope, introduces a breaking API change (correlating with MAJOR in Semantic Versioning). A BREAKING CHANGE can be part of commits of any type.
+types other than fix: and feat: are allowed, for example @commitlint/config-conventional (based on the Angular convention) recommends build:, chore:, ci:, docs:, style:, refactor:, perf:, test:, and others.
+footers other than BREAKING CHANGE: <description> may be provided and follow a convention similar to git trailer format.
+```
+
+## Architecture
+
+The project follows a three-tier layered architecture with strict separation of concerns:
+
+### Titan.Core (Domain Layer)
+- Contains domain models (Order, Trade, OrderBook state)
+- Contains enumerations (OrderType, OrderSide, OrderStatus, TradeType)
+- No dependencies on other projects
+- Pure data structures with no business logic
+
+### Titan.Engine (Business Logic Layer)
+- Implements the FIFO Price-Time Priority matching algorithm
+- Maintains the in-memory Limit Order Book (LOB)
+- Handles order lifecycle (submission, matching, partial fills, cancellation)
+- Depends on: Titan.Core
+
+**Key Matching Rules:**
+- Bids (Buy Orders): Prioritized by highest price, then FIFO by time
+- Asks (Sell Orders): Prioritized by lowest price, then FIFO by time
+- Trade Trigger: Executes when Bid Price ≥ Ask Price
+- Partial Fills: Single large orders matched against multiple smaller orders
+
+### Titan.Gateway (API Layer)
+- ASP.NET Core web gateway serving as the HTTP entry point
+- Request validation, sanitization, and security enforcement
+- Rate limiting and request throttling
+- Order handoff to the matching engine
+- Depends on: Titan.Core, Titan.Engine
+
+**Build Order:** Core → Engine → Gateway
+
+## Technical Requirements
+
+| Requirement | Details |
+|-------------|---------|
+| Target Framework | .NET 10.0 |
+| Language | C# with ImplicitUsings and Nullable enabled |
+| Financial Precision | 128-bit decimal for all calculations |
+| Thread Safety | Strict synchronization primitives for Order Book integrity |
+| Observability | Real-time metrics on throughput (OPS) and execution latency |
+
+## Order Types & Matching
+
+**Limit Orders:** Buy/sell at specified price or better. Provides liquidity to the market and stored in the order book until matched or cancelled.
+
+**Market Orders:** Immediate execution at best available current price. Consumes liquidity from the book.
+
+**Matching Algorithm:** Price-Time Priority (FIFO)
+- Equal price levels: First-in-first-out by arrival time
+- Trade settlement when matching conditions met (Bid Price ≥ Ask Price)
+- Generates Trade records with full audit trail
+
+## Current Development Status
+
+The project structure and solution files are in place. Directory structure for models, enums, interfaces, and services has been created but implementation code has not yet been written. The system is ready for core feature development.
