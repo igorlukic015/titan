@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
-using Titan.Core.Enums;
+using Titan.Core.models;
 using Titan.Core.Models;
-using Titan.Engine.Interfaces;
+using Titan.Engine.interfaces;
 using Titan.Gateway.DTOs;
 
 namespace Titan.Gateway.Endpoints;
@@ -10,63 +10,25 @@ public static class OrderEndpoints
 {
     public static Results<Ok<SubmitOrderResponse>, BadRequest<ErrorResponse>> SubmitOrder(
         SubmitOrderRequest request,
-        IOrderBook orderBook)
+        IOrderService orderService)
     {
-        if (string.IsNullOrWhiteSpace(request.Symbol))
+        Result<Order> orderOrError =
+            orderService.CreateOrder(request.Symbol, request.Price, request.Quantity, request.Type, request.Side);
+
+        if (!orderOrError.IsSuccess)
         {
-            return TypedResults.BadRequest(new ErrorResponse { Error = "Symbol is required" });
+            return TypedResults.BadRequest(new ErrorResponse() { Error = orderOrError.Error });
         }
 
-        if (request.Price <= 0)
-        {
-            return TypedResults.BadRequest(new ErrorResponse { Error = "Price must be greater than 0" });
-        }
-
-        if (request.Quantity <= 0)
-        {
-            return TypedResults.BadRequest(new ErrorResponse { Error = "Quantity must be greater than 0" });
-        }
-
-        if (!Enum.TryParse<OrderType>(request.Type, ignoreCase: true, out OrderType orderType))
-        {
-            return TypedResults.BadRequest(new ErrorResponse { Error = "Invalid order type. Must be 'Limit' or 'Market'" });
-        }
-
-        if (!Enum.TryParse<OrderSide>(request.Side, ignoreCase: true, out OrderSide orderSide))
-        {
-            return TypedResults.BadRequest(new ErrorResponse { Error = "Invalid order side. Must be 'Buy' or 'Sell'" });
-        }
-
-        Order order = new()
-        {
-            Id = Guid.NewGuid(),
-            Symbol = request.Symbol,
-            Price = request.Price,
-            Quantity = request.Quantity,
-            Type = orderType,
-            Side = orderSide,
-            Status = OrderStatus.Pending,
-            RemainingQuantity = request.Quantity,
-            Timestamp = DateTime.UtcNow
-        };
-
-        IReadOnlyList<Trade> trades;
-        try
-        {
-            trades = orderBook.ProcessOrder(order);
-        }
-        catch (ArgumentException ex)
-        {
-            return TypedResults.BadRequest(new ErrorResponse { Error = ex.Message });
-        }
+        Result<IReadOnlyList<Trade>> tradesOrError = orderService.CreateTrade(orderOrError.Value);
 
         SubmitOrderResponse response = new()
         {
-            OrderId = order.Id,
-            Symbol = order.Symbol,
-            Status = order.Status.ToString(),
-            RemainingQuantity = order.RemainingQuantity,
-            Trades = trades.Select(t => new TradeResponse
+            OrderId = orderOrError.Value.Id,
+            Symbol = orderOrError.Value.Symbol,
+            Status = orderOrError.Value.Status.ToString(),
+            RemainingQuantity = orderOrError.Value.RemainingQuantity,
+            Trades = [.. tradesOrError.Value.Select(t => new TradeResponse
             {
                 TradeId = t.Id,
                 BuyOrderId = t.BuyOrderId,
@@ -76,7 +38,7 @@ public static class OrderEndpoints
                 Quantity = t.Quantity,
                 Timestamp = t.Timestamp,
                 Type = t.Type.ToString()
-            }).ToList()
+            })]
         };
 
         return TypedResults.Ok(response);

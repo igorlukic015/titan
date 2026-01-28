@@ -2,7 +2,7 @@ using Titan.Core.Enums;
 using Titan.Core.Models;
 using Titan.Engine.Interfaces;
 
-namespace Titan.Engine.Services;
+namespace Titan.Engine.services;
 
 public class OrderBook : IOrderBook
 {

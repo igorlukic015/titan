@@ -68,7 +68,7 @@ These rules ensure maintainability, safety, and developer velocity.
 
 ### 3 — While Coding
   
-- **C-1 (MUST)** Follow TDD: scaffold stub -> write failing test -> implement.
+- **C-1 (SHOULD NOT)** Write tests unless specifically instructed by the user. 
 - **C-2 (MUST)** Name functions with existing domain vocabulary for consistency.
 - **C-3 (SHOULD NOT)** Introduce classes when small testable functions suffice.  
 - **C-4 (SHOULD)** Prefer simple, composable, testable functions.
@@ -152,21 +152,16 @@ Analyze similar parts of the codebase and determine whether your plan:
 When I type "qcode", this means:
 
 ```
-Implement your plan and make sure your new tests pass.
-Always run tests to make sure you didn't break anything else.
+Implement your plan.
 ```
 
-### QCHECK
+## QTEST
 
-When I type "qcheck", this means:
+When I type "qtest", this means:
 
 ```
-You are a SKEPTICAL senior software engineer.
-Perform this analysis for every MAJOR code change you introduced (skip minor changes):
-
-1. CLAUDE.md checklist Writing Functions Best Practices.
-2. CLAUDE.md checklist Writing Tests Best Practices.
-3. CLAUDE.md checklist Implementation Best Practices.
+Write tests for the new code. 
+Make sure all tests pass.
 ```
 
 ### QCHECKF
@@ -212,59 +207,3 @@ BREAKING CHANGE: a commit that has a footer BREAKING CHANGE:, or appends a ! aft
 types other than fix: and feat: are allowed, for example @commitlint/config-conventional (based on the Angular convention) recommends build:, chore:, ci:, docs:, style:, refactor:, perf:, test:, and others.
 footers other than BREAKING CHANGE: <description> may be provided and follow a convention similar to git trailer format.
 ```
-
-## Architecture
-
-The project follows a three-tier layered architecture with strict separation of concerns:
-
-### Titan.Core (Domain Layer)
-- Contains domain models (Order, Trade, OrderBook state)
-- Contains enumerations (OrderType, OrderSide, OrderStatus, TradeType)
-- No dependencies on other projects
-- Pure data structures with no business logic
-
-### Titan.Engine (Business Logic Layer)
-- Implements the FIFO Price-Time Priority matching algorithm
-- Maintains the in-memory Limit Order Book (LOB)
-- Handles order lifecycle (submission, matching, partial fills, cancellation)
-- Depends on: Titan.Core
-
-**Key Matching Rules:**
-- Bids (Buy Orders): Prioritized by highest price, then FIFO by time
-- Asks (Sell Orders): Prioritized by lowest price, then FIFO by time
-- Trade Trigger: Executes when Bid Price ≥ Ask Price
-- Partial Fills: Single large orders matched against multiple smaller orders
-
-### Titan.Gateway (API Layer)
-- ASP.NET Core web gateway serving as the HTTP entry point
-- Request validation, sanitization, and security enforcement
-- Rate limiting and request throttling
-- Order handoff to the matching engine
-- Depends on: Titan.Core, Titan.Engine
-
-**Build Order:** Core → Engine → Gateway
-
-## Technical Requirements
-
-| Requirement | Details |
-|-------------|---------|
-| Target Framework | .NET 10.0 |
-| Language | C# with ImplicitUsings and Nullable enabled |
-| Financial Precision | 128-bit decimal for all calculations |
-| Thread Safety | Strict synchronization primitives for Order Book integrity |
-| Observability | Real-time metrics on throughput (OPS) and execution latency |
-
-## Order Types & Matching
-
-**Limit Orders:** Buy/sell at specified price or better. Provides liquidity to the market and stored in the order book until matched or cancelled.
-
-**Market Orders:** Immediate execution at best available current price. Consumes liquidity from the book.
-
-**Matching Algorithm:** Price-Time Priority (FIFO)
-- Equal price levels: First-in-first-out by arrival time
-- Trade settlement when matching conditions met (Bid Price ≥ Ask Price)
-- Generates Trade records with full audit trail
-
-## Current Development Status
-
-The project structure and solution files are in place. Directory structure for models, enums, interfaces, and services has been created but implementation code has not yet been written. The system is ready for core feature development.
