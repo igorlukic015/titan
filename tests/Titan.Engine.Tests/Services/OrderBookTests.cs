@@ -12,7 +12,7 @@ public class OrderBookTests
     [Fact]
     public void Constructor_InitializesWithSymbol()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
 
         Assert.Equal(symbol, orderBook.Symbol);
         Assert.Empty(orderBook.GetBids());
@@ -22,7 +22,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_RejectsOrderWithDifferentSymbol()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         Order order = CreateOrder(OrderSide.Buy, 100m, 1m, "ETHUSD");
 
         ArgumentException exception = Assert.Throws<ArgumentException>(() => orderBook.ProcessOrder(order));
@@ -32,7 +32,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_BuyOrderWithNoAsks_AddsToBook()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         Order buyOrder = CreateOrder(OrderSide.Buy, 100m, 1m);
 
         IReadOnlyList<Trade> trades = orderBook.ProcessOrder(buyOrder);
@@ -46,7 +46,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_SellOrderWithNoBids_AddsToBook()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         Order sellOrder = CreateOrder(OrderSide.Sell, 100m, 1m);
 
         IReadOnlyList<Trade> trades = orderBook.ProcessOrder(sellOrder);
@@ -60,7 +60,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_BuyMatchesAsk_ReturnsOneTrade()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         decimal askPrice = 100m;
         decimal quantity = 1m;
         Order sellOrder = CreateOrder(OrderSide.Sell, askPrice, quantity);
@@ -79,7 +79,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_SellMatchesBid_ReturnsOneTrade()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         decimal bidPrice = 100m;
         decimal quantity = 1m;
         Order buyOrder = CreateOrder(OrderSide.Buy, bidPrice, quantity);
@@ -98,7 +98,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_PartialFill_UpdatesRemainingQuantity()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         Order sellOrder = CreateOrder(OrderSide.Sell, 100m, 2m);
         orderBook.ProcessOrder(sellOrder);
 
@@ -115,7 +115,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_MultipleMatches_ReturnsMultipleTrades()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         Order sell1 = CreateOrder(OrderSide.Sell, 100m, 1m, timestamp: DateTime.UtcNow.AddSeconds(-2));
         Order sell2 = CreateOrder(OrderSide.Sell, 100m, 1m, timestamp: DateTime.UtcNow.AddSeconds(-1));
         orderBook.ProcessOrder(sell1);
@@ -134,7 +134,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_NoMatch_BuyPriceTooLow()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         Order sellOrder = CreateOrder(OrderSide.Sell, 100m, 1m);
         orderBook.ProcessOrder(sellOrder);
 
@@ -149,7 +149,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_NoMatch_SellPriceTooHigh()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         Order buyOrder = CreateOrder(OrderSide.Buy, 100m, 1m);
         orderBook.ProcessOrder(buyOrder);
 
@@ -164,7 +164,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_BidsOrderedByPriceThenTime()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         DateTime baseTime = DateTime.UtcNow;
         Order buy1 = CreateOrder(OrderSide.Buy, 100m, 1m, timestamp: baseTime.AddSeconds(-3));
         Order buy2 = CreateOrder(OrderSide.Buy, 101m, 1m, timestamp: baseTime.AddSeconds(-2));
@@ -185,7 +185,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_AsksOrderedByPriceThenTime()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         DateTime baseTime = DateTime.UtcNow;
         Order sell1 = CreateOrder(OrderSide.Sell, 100m, 1m, timestamp: baseTime.AddSeconds(-3));
         Order sell2 = CreateOrder(OrderSide.Sell, 99m, 1m, timestamp: baseTime.AddSeconds(-2));
@@ -206,7 +206,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_TradeExecutesAtMakerPrice()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         decimal makerPrice = 100m;
         Order sellOrder = CreateOrder(OrderSide.Sell, makerPrice, 1m);
         orderBook.ProcessOrder(sellOrder);
@@ -221,7 +221,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_UpdatesOrderStatus_Filled()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         Order sellOrder = CreateOrder(OrderSide.Sell, 100m, 1m);
         orderBook.ProcessOrder(sellOrder);
 
@@ -235,7 +235,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_UpdatesOrderStatus_PartiallyFilled()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         Order sellOrder = CreateOrder(OrderSide.Sell, 100m, 2m);
         orderBook.ProcessOrder(sellOrder);
 
@@ -249,7 +249,7 @@ public class OrderBookTests
     [Fact]
     public void GetBids_ReturnsReadOnlyCopy()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         Order buyOrder = CreateOrder(OrderSide.Buy, 100m, 1m);
         orderBook.ProcessOrder(buyOrder);
 
@@ -262,7 +262,7 @@ public class OrderBookTests
     [Fact]
     public void ProcessOrder_TradeRecordsCorrectOrderIds()
     {
-        OrderBook orderBook = new OrderBook(symbol);
+        OrderBook orderBook = new(symbol);
         Order sellOrder = CreateOrder(OrderSide.Sell, 100m, 1m);
         orderBook.ProcessOrder(sellOrder);
 

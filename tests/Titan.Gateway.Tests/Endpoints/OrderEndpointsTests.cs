@@ -31,7 +31,7 @@ public class OrderEndpointsTests : IDisposable
     [Fact]
     public async Task SubmitOrder_WithValidLimitBuyOrder_ReturnsOkWithPendingStatus()
     {
-        SubmitOrderRequest request = new SubmitOrderRequest
+        SubmitOrderRequest request = new()
         {
             Symbol = "BTC/USD",
             Price = 10000m,
@@ -55,7 +55,7 @@ public class OrderEndpointsTests : IDisposable
     [Fact]
     public async Task SubmitOrder_WithValidLimitSellOrder_ReturnsOkWithPendingStatus()
     {
-        SubmitOrderRequest request = new SubmitOrderRequest
+        SubmitOrderRequest request = new()
         {
             Symbol = "BTC/USD",
             Price = 90000m,
@@ -78,7 +78,7 @@ public class OrderEndpointsTests : IDisposable
     [Fact]
     public async Task SubmitOrder_WithMatchingBuyAndSellOrders_ReturnsFilledStatusWithTrade()
     {
-        SubmitOrderRequest sellRequest = new SubmitOrderRequest
+        SubmitOrderRequest sellRequest = new()
         {
             Symbol = "BTC/USD",
             Price = 60000m,
@@ -89,7 +89,7 @@ public class OrderEndpointsTests : IDisposable
 
         await client.PostAsJsonAsync("/orders", sellRequest);
 
-        SubmitOrderRequest buyRequest = new SubmitOrderRequest
+        SubmitOrderRequest buyRequest = new()
         {
             Symbol = "BTC/USD",
             Price = 60000m,
@@ -115,7 +115,7 @@ public class OrderEndpointsTests : IDisposable
     [Fact]
     public async Task SubmitOrder_WithPartiallyMatchingOrders_ReturnsPartiallyFilledStatus()
     {
-        SubmitOrderRequest sellRequest = new SubmitOrderRequest
+        SubmitOrderRequest sellRequest = new()
         {
             Symbol = "BTC/USD",
             Price = 61000m,
@@ -126,7 +126,7 @@ public class OrderEndpointsTests : IDisposable
 
         await client.PostAsJsonAsync("/orders", sellRequest);
 
-        SubmitOrderRequest buyRequest = new SubmitOrderRequest
+        SubmitOrderRequest buyRequest = new()
         {
             Symbol = "BTC/USD",
             Price = 61000m,
@@ -151,7 +151,7 @@ public class OrderEndpointsTests : IDisposable
     [InlineData(-100, 1.0, "Price must be greater than 0")]
     public async Task SubmitOrder_WithInvalidPrice_ReturnsBadRequestWithErrorMessage(decimal price, decimal quantity, string expectedError)
     {
-        SubmitOrderRequest request = new SubmitOrderRequest
+        SubmitOrderRequest request = new()
         {
             Symbol = "BTC/USD",
             Price = price,
@@ -173,7 +173,7 @@ public class OrderEndpointsTests : IDisposable
     [InlineData(50000, -1.5, "Quantity must be greater than 0")]
     public async Task SubmitOrder_WithInvalidQuantity_ReturnsBadRequestWithErrorMessage(decimal price, decimal quantity, string expectedError)
     {
-        SubmitOrderRequest request = new SubmitOrderRequest
+        SubmitOrderRequest request = new()
         {
             Symbol = "BTC/USD",
             Price = price,
@@ -195,7 +195,7 @@ public class OrderEndpointsTests : IDisposable
     [InlineData("   ", "Symbol is required")]
     public async Task SubmitOrder_WithEmptyOrWhitespaceSymbol_ReturnsBadRequestWithErrorMessage(string symbol, string expectedError)
     {
-        SubmitOrderRequest request = new SubmitOrderRequest
+        SubmitOrderRequest request = new()
         {
             Symbol = symbol,
             Price = 50000m,
@@ -218,7 +218,7 @@ public class OrderEndpointsTests : IDisposable
     [InlineData("")]
     public async Task SubmitOrder_WithInvalidOrderType_ReturnsBadRequestWithErrorMessage(string orderType)
     {
-        SubmitOrderRequest request = new SubmitOrderRequest
+        SubmitOrderRequest request = new()
         {
             Symbol = "BTC/USD",
             Price = 50000m,
@@ -241,7 +241,7 @@ public class OrderEndpointsTests : IDisposable
     [InlineData("")]
     public async Task SubmitOrder_WithInvalidOrderSide_ReturnsBadRequestWithErrorMessage(string orderSide)
     {
-        SubmitOrderRequest request = new SubmitOrderRequest
+        SubmitOrderRequest request = new()
         {
             Symbol = "BTC/USD",
             Price = 50000m,
@@ -261,7 +261,7 @@ public class OrderEndpointsTests : IDisposable
     [Fact]
     public async Task SubmitOrder_WithMismatchedSymbol_ReturnsBadRequestWithErrorMessage()
     {
-        SubmitOrderRequest request = new SubmitOrderRequest
+        SubmitOrderRequest request = new()
         {
             Symbol = "ETH/USD",
             Price = 3000m,
@@ -284,7 +284,7 @@ public class OrderEndpointsTests : IDisposable
     [InlineData("LiMiT")]
     public async Task SubmitOrder_WithCaseInsensitiveOrderType_ReturnsOk(string orderType)
     {
-        SubmitOrderRequest request = new SubmitOrderRequest
+        SubmitOrderRequest request = new()
         {
             Symbol = "BTC/USD",
             Price = 50000m,
@@ -304,7 +304,7 @@ public class OrderEndpointsTests : IDisposable
     [InlineData("BuY")]
     public async Task SubmitOrder_WithCaseInsensitiveOrderSide_ReturnsOk(string orderSide)
     {
-        SubmitOrderRequest request = new SubmitOrderRequest
+        SubmitOrderRequest request = new()
         {
             Symbol = "BTC/USD",
             Price = 50000m,
@@ -321,7 +321,7 @@ public class OrderEndpointsTests : IDisposable
     [Fact]
     public async Task SubmitOrder_WithMarketOrderType_ReturnsOk()
     {
-        SubmitOrderRequest request = new SubmitOrderRequest
+        SubmitOrderRequest request = new()
         {
             Symbol = "BTC/USD",
             Price = 50000m,
@@ -338,7 +338,7 @@ public class OrderEndpointsTests : IDisposable
     [Fact]
     public async Task SubmitOrder_WithVerySmallQuantity_ReturnsOk()
     {
-        SubmitOrderRequest request = new SubmitOrderRequest
+        SubmitOrderRequest request = new()
         {
             Symbol = "BTC/USD",
             Price = 50000m,
@@ -358,7 +358,7 @@ public class OrderEndpointsTests : IDisposable
     [Fact]
     public async Task SubmitOrder_WithVeryLargePrice_ReturnsOk()
     {
-        SubmitOrderRequest request = new SubmitOrderRequest
+        SubmitOrderRequest request = new()
         {
             Symbol = "BTC/USD",
             Price = 999999999.99m,
@@ -375,7 +375,7 @@ public class OrderEndpointsTests : IDisposable
     [Fact]
     public async Task SubmitOrder_GeneratesUniqueOrderIds()
     {
-        SubmitOrderRequest request = new SubmitOrderRequest
+        SubmitOrderRequest request = new()
         {
             Symbol = "BTC/USD",
             Price = 50000m,

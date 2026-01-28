@@ -10,7 +10,7 @@ public static class OrderGenerator
     private const decimal MinQuantity = 1m;
     private const decimal MaxQuantity = 500m;
 
-    private static readonly ThreadLocal<Random> RandomInstance = new ThreadLocal<Random>(() => new Random());
+    private static readonly ThreadLocal<Random> RandomInstance = new(() => new Random());
 
     public static SubmitOrderRequest GenerateOrder()
     {

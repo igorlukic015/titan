@@ -37,7 +37,7 @@ public static class OrderEndpoints
             return TypedResults.BadRequest(new ErrorResponse { Error = "Invalid order side. Must be 'Buy' or 'Sell'" });
         }
 
-        Order order = new Order
+        Order order = new()
         {
             Id = Guid.NewGuid(),
             Symbol = request.Symbol,
@@ -60,7 +60,7 @@ public static class OrderEndpoints
             return TypedResults.BadRequest(new ErrorResponse { Error = ex.Message });
         }
 
-        SubmitOrderResponse response = new SubmitOrderResponse
+        SubmitOrderResponse response = new()
         {
             OrderId = order.Id,
             Symbol = order.Symbol,

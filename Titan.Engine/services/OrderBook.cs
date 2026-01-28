@@ -8,26 +8,28 @@ public class OrderBook : IOrderBook
 {
     private readonly List<Order> bids;
     private readonly List<Order> asks;
-    private readonly object lockObject;
+    private readonly Lock lockObject;
 
     public string Symbol { get; }
 
     public OrderBook(string symbol)
     {
         Symbol = symbol;
-        bids = new List<Order>();
-        asks = new List<Order>();
-        lockObject = new object();
+        bids = [];
+        asks = [];
+        lockObject = new Lock();
     }
 
     public IReadOnlyList<Trade> ProcessOrder(Order order)
     {
         lock (lockObject)
         {
-            List<Trade> trades = new List<Trade>();
+            List<Trade> trades = [];
 
             if (order.Symbol != Symbol)
+            {
                 throw new ArgumentException($"Order symbol {order.Symbol} does not match OrderBook symbol {Symbol}");
+            }
 
             List<Order> oppositeList = order.Side == OrderSide.Buy ? asks : bids;
             List<Order> ownList = order.Side == OrderSide.Buy ? bids : asks;
@@ -37,7 +39,9 @@ public class OrderBook : IOrderBook
                 Order topOrder = oppositeList[0];
 
                 if (!CanMatch(order, topOrder))
+                {
                     break;
+                }
 
                 decimal matchedQuantity = Math.Min(order.RemainingQuantity, topOrder.RemainingQuantity);
 
@@ -51,7 +55,9 @@ public class OrderBook : IOrderBook
                 UpdateOrderStatus(topOrder);
 
                 if (topOrder.RemainingQuantity == 0)
+                {
                     oppositeList.RemoveAt(0);
+                }
             }
 
             if (order.RemainingQuantity > 0)
@@ -108,15 +114,19 @@ public class OrderBook : IOrderBook
         };
     }
 
-    private void UpdateOrderStatus(Order order)
+    private static void UpdateOrderStatus(Order order)
     {
         if (order.RemainingQuantity == 0)
+        {
             order.Status = OrderStatus.Filled;
+        }
         else if (order.Quantity > order.RemainingQuantity)
+        {
             order.Status = OrderStatus.PartiallyFilled;
+        }
     }
 
-    private void SortOrders(List<Order> orders, OrderSide side)
+    private static void SortOrders(List<Order> orders, OrderSide side)
     {
         if (side == OrderSide.Buy)
         {

@@ -3,10 +3,10 @@ using Titan.Simulator.Services;
 
 (string gatewayUrl, int requestsPerSecond) = SimulatorConfig.ParseArguments(args);
 
-TelemetryCollector telemetryCollector = new TelemetryCollector();
-LoadGenerator loadGenerator = new LoadGenerator(gatewayUrl, requestsPerSecond, telemetryCollector);
+TelemetryCollector telemetryCollector = new();
+LoadGenerator loadGenerator = new(gatewayUrl, requestsPerSecond, telemetryCollector);
 
-CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+CancellationTokenSource cancellationTokenSource = new();
 
 Console.CancelKeyPress += (sender, eventArgs) =>
 {

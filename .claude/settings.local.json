@@ -6,7 +6,11 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(dotnet restore:*)",
-      "Bash(dotnet test:*)"
+      "Bash(dotnet test:*)",
+      "Bash(ls -la \"D:\\\\Projects\\\\titan\\\\Titan.Core\"\" | grep -E \"^d \")",
+      "Bash(curl:*)",
+      "Bash(dotnet sln:*)",
+      "Bash(dotnet:*)"
     ]
   }
 }

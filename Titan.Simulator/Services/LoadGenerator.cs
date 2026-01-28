@@ -20,7 +20,7 @@ public class LoadGenerator
 
         int maxConcurrency = requestsPerSecond * 2;
 
-        SocketsHttpHandler handler = new SocketsHttpHandler
+        SocketsHttpHandler handler = new()
         {
             PooledConnectionLifetime = TimeSpan.FromMinutes(1),
             PooledConnectionIdleTimeout = TimeSpan.FromMinutes(2),
@@ -35,7 +35,7 @@ public class LoadGenerator
 
     public async Task RunAsync(CancellationToken cancellationToken)
     {
-        ParallelOptions options = new ParallelOptions
+        ParallelOptions options = new()
         {
             MaxDegreeOfParallelism = requestsPerSecond * 2,
             CancellationToken = cancellationToken
