@@ -1,7 +1,7 @@
 using Titan.Core.Enums;
 using Titan.Core.Models;
 
-namespace Titan.Simulator.Services;
+namespace Titan.Engine.services;
 
 public class UnsafeOrderBook
 {
