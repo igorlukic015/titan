@@ -2,7 +2,7 @@ namespace Titan.Simulator.Configuration;
 
 public static class SimulatorConfig
 {
-    public const string DefaultGatewayUrl = "http://localhost:5000";
+    public const string DefaultGatewayUrl = "http://localhost:62545";
     public const int DefaultRequestsPerSecond = 1000;
     public const int ReportingIntervalSeconds = 2;
 
