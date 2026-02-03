@@ -10,7 +10,11 @@
       "Bash(ls -la \"D:\\\\Projects\\\\titan\\\\Titan.Core\"\" | grep -E \"^d \")",
       "Bash(curl:*)",
       "Bash(dotnet sln:*)",
-      "Bash(dotnet:*)"
+      "Bash(dotnet:*)",
+      "Bash(find:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker compose up:*)",
+      "Bash(docker compose:*)"
     ]
   }
 }
