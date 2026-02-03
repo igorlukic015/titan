@@ -1,8 +1,4 @@
 <Solution>
-  <Folder Name="/tests/">
-    <Project Path="tests/Titan.Engine.Tests/Titan.Engine.Tests.csproj" />
-    <Project Path="tests/Titan.Gateway.Tests/Titan.Gateway.Tests.csproj" />
-  </Folder>
   <Project Path="Titan.Core/Titan.Core.csproj" />
   <Project Path="Titan.Engine/Titan.Engine.csproj" />
   <Project Path="Titan.Gateway/Titan.Gateway.csproj" />

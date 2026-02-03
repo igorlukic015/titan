@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Titan.Engine.Interfaces;
 using Titan.Engine.Services;
 
@@ -20,7 +21,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 services.Remove(descriptor);
             }
 
-            services.AddSingleton<IOrderBook>(new OrderBook("BTC/USD"));
+            services.AddSingleton<IOrderBook>(sp =>
+                new OrderBook("BTC/USD", sp.GetRequiredService<ILoggerFactory>().CreateLogger<OrderBook>()));
         });
     }
 }

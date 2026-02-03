@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Titan.Core.Enums;
 using Titan.Core.Models;
 using Titan.Engine.Interfaces;
@@ -9,12 +10,14 @@ public class OrderBook : IOrderBook
     private readonly List<Order> bids;
     private readonly List<Order> asks;
     private readonly Lock lockObject;
+    private readonly ILogger<OrderBook> logger;
 
     public string Symbol { get; }
 
-    public OrderBook(string symbol)
+    public OrderBook(string symbol, ILogger<OrderBook> logger)
     {
         Symbol = symbol;
+        this.logger = logger;
         bids = [];
         asks = [];
         lockObject = new Lock();
@@ -34,12 +37,17 @@ public class OrderBook : IOrderBook
             List<Order> oppositeList = order.Side == OrderSide.Buy ? asks : bids;
             List<Order> ownList = order.Side == OrderSide.Buy ? bids : asks;
 
+            logger.LogInformation("Order {OrderId} {Side} {Qty}@{Price} attempting match on {Symbol}",
+                order.Id, order.Side, order.Quantity, order.Price, Symbol);
+
             while (order.RemainingQuantity > 0 && oppositeList.Count > 0)
             {
                 Order topOrder = oppositeList[0];
 
                 if (!CanMatch(order, topOrder))
                 {
+                    logger.LogDebug("Order {OrderId} cannot match against {BookOrderId} ({Price} vs {BookPrice})",
+                        order.Id, topOrder.Id, order.Price, topOrder.Price);
                     break;
                 }
 
@@ -54,6 +62,9 @@ public class OrderBook : IOrderBook
                 UpdateOrderStatus(order);
                 UpdateOrderStatus(topOrder);
 
+                logger.LogInformation("Trade {TradeId}: Order {IncomingId} matched {BookOrderId}, {MatchedQty}@{TradePrice}",
+                    trade.Id, order.Id, topOrder.Id, matchedQuantity, trade.Price);
+
                 if (topOrder.RemainingQuantity == 0)
                 {
                     oppositeList.RemoveAt(0);
@@ -62,6 +73,8 @@ public class OrderBook : IOrderBook
 
             if (order.RemainingQuantity > 0)
             {
+                logger.LogInformation("Order {OrderId} resting on book, remaining {RemainingQty}",
+                    order.Id, order.RemainingQuantity);
                 ownList.Add(order);
                 SortOrders(ownList, order.Side);
             }

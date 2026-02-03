@@ -6,7 +6,8 @@ using Titan.Gateway.Endpoints;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IOrderBook>(new OrderBook("BTC/USD"));
+builder.Services.AddSingleton<IOrderBook>(sp =>
+    new OrderBook("BTC/USD", sp.GetRequiredService<ILoggerFactory>().CreateLogger<OrderBook>()));
 builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.ConfigureHttpJsonOptions(options =>

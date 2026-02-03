@@ -1,4 +1,5 @@
-﻿using Titan.Core.Enums;
+﻿using Microsoft.Extensions.Logging;
+using Titan.Core.Enums;
 using Titan.Core.models;
 using Titan.Core.Models;
 using Titan.Engine.interfaces;
@@ -9,10 +10,12 @@ namespace Titan.Engine.services;
 public class OrderService : IOrderService
 {
     private readonly IOrderBook orderBook;
+    private readonly ILogger<OrderService> logger;
 
-    public OrderService(IOrderBook orderBook)
+    public OrderService(IOrderBook orderBook, ILogger<OrderService> logger)
     {
         this.orderBook = orderBook;
+        this.logger = logger;
     }
 
     public Result<Order> CreateOrder(string symbol, decimal price, decimal quantity, string type, string side)
@@ -60,13 +63,17 @@ public class OrderService : IOrderService
 
     public Result<IReadOnlyList<Trade>> CreateTrade(Order order)
     {
+        logger.LogInformation("Submitting order {OrderId} to book for matching", order.Id);
+
         try
         {
             IReadOnlyList<Trade> trades = orderBook.ProcessOrder(order);
+            logger.LogInformation("Order {OrderId} produced {TradeCount} trade(s)", order.Id, trades.Count);
             return Result<IReadOnlyList<Trade>>.CreateSuccess(trades);
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Order {OrderId} failed during matching", order.Id);
             return Result<IReadOnlyList<Trade>>.CreateError(ex.Message);
         }
     }
