@@ -1,6 +1,12 @@
 using Titan.Simulator.Configuration;
 using Titan.Simulator.Services;
 
+if (args.Length > 0 && args[0] == "--demo-lock")
+{
+    await LockDemo.RunAsync();
+    return;
+}
+
 (string gatewayUrl, int requestsPerSecond) = SimulatorConfig.ParseArguments(args);
 
 TelemetryCollector telemetryCollector = new();
